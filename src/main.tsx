@@ -3,11 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { LangProvider } from "@/components/context/lang-provider.tsx";
+import { ListingsProvider } from "@/components/context/listings-provider.tsx";
 
 createRoot(document.getElementById("root")!).render(
 	<StrictMode>
 		<LangProvider defaultLang="en" storageKey="aptsearches-lang">
-			<App />
+			<ListingsProvider>
+				<App />
+			</ListingsProvider>
 		</LangProvider>
 	</StrictMode>
 );
