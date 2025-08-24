@@ -9,6 +9,7 @@ import { BellIcon, LoaderCircleIcon } from "lucide-react";
 import { useRef, useState } from "react";
 
 export function SearchForm() {
+	console.log("api url is:", import.meta.env.VITE_API_URL);
 	const [error, setError] = useState<string>("");
 	const [bedrooms, setBedrooms] = useState<number | undefined>();
 	const [neighborhood, setNeighborhood] = useState<string>("");
