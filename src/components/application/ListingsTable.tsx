@@ -1,14 +1,8 @@
-import type { Listing } from "@/lib/types";
-import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { formatNumber } from "@/lib/utils";
-
 import {
 	type ColumnDef,
 	type SortingState,
 	flexRender,
 	getCoreRowModel,
-	getPaginationRowModel,
 	getSortedRowModel,
 	useReactTable,
 } from "@tanstack/react-table";
@@ -92,57 +86,6 @@ export function ListingsTable<TData, TValue>({
 					)}
 				</TableBody>
 			</Table>
-			{/* <Table className="table-fixed w-full">
-				<TableHeader>
-					<TableRow>
-						<TableHead className="w-20 truncate text-center">
-							Image
-						</TableHead>
-						<TableHead className="w-32 truncate">Address</TableHead>
-						<TableHead className="w-20 truncate">Price</TableHead>
-						<TableHead className="w-32 truncate">Name</TableHead>
-						<TableHead className="w-10 text-center">View</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{listings.map((listing) => (
-						<TableRow key={listing.id}>
-							<TableCell className="w-20 h-20 text-center align-middle">
-								<img
-									src={listing.imageUrl}
-									alt="listing-picture"
-									className="inline-block w-20 h-20 object-cover rounded"
-								/>
-							</TableCell>
-							<TableCell
-								className="w-32 truncate"
-								title={listing.address}>
-								{listing.address}
-							</TableCell>
-							<TableCell className="w-20 truncate">
-								{`$${formatNumber(listing.price)} ${
-									listing.priceCurrency
-								}`}
-							</TableCell>
-							<TableCell
-								className="w-32 truncate"
-								title={listing.name}>
-								{listing.name}
-							</TableCell>
-							<TableCell className="w-10 text-center">
-								<a
-									href={listing.url}
-									target="_blank"
-									rel="noopener noreferrer">
-									<Button>
-										<ArrowRight />
-									</Button>
-								</a>
-							</TableCell>
-						</TableRow>
-					))}
-				</TableBody>
-			</Table> */}
 		</section>
 	);
 }
