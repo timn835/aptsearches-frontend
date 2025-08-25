@@ -8,15 +8,11 @@ type ListingsProviderProps = {
 type ListingsProviderState = {
 	listings: Listing[] | undefined;
 	setListings: (listings: Listing[] | undefined) => void;
-	isLoading: boolean;
-	setIsLoading: (loading: boolean) => void;
 };
 
 const initialState: ListingsProviderState = {
 	listings: undefined,
 	setListings: () => null,
-	isLoading: false,
-	setIsLoading: () => null,
 };
 
 const ListingsProviderContext =
@@ -27,13 +23,10 @@ export function ListingsProvider({
 	...props
 }: ListingsProviderProps) {
 	const [listings, setListings] = useState<Listing[] | undefined>();
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const value = {
 		listings,
 		setListings,
-		isLoading,
-		setIsLoading,
 	};
 
 	return (

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowBigDownIcon, SendIcon } from "lucide-react";
 import { columns } from "@/components/application/ListingsColumns";
+// import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "sonner";
 
 export default function App() {
 	const { listings } = useListings();
@@ -55,7 +57,7 @@ export default function App() {
 					</div>
 				</section>
 			</div>
-
+			<Toaster position="top-center" />
 			{/* Footer */}
 			<footer className="mt-10 border-t py-6 text-center text-sm text-muted-foreground">
 				&copy; {new Date().getFullYear()} APTSearches. All rights

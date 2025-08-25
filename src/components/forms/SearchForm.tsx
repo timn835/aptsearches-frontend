@@ -4,35 +4,39 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MONTREAL_NEIGHBORHOODS_DATA } from "@/lib/utils";
+import {
+	adjustParams,
+	getSearchParamString,
+	MTL_NEIGHBORHOODS,
+} from "@/lib/utils";
 import { BellIcon, LoaderCircleIcon } from "lucide-react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 
 export function SearchForm() {
-	console.log("api url is:", import.meta.env.VITE_API_URL);
-	const [error, setError] = useState<string>("");
 	const [bedrooms, setBedrooms] = useState<number | undefined>();
 	const [neighborhood, setNeighborhood] = useState<string>("");
+	const [listingsLoading, setListingsLoading] = useState<boolean>(false);
+	const [subscriptionCreating, setSubscriptionCreating] =
+		useState<boolean>(false);
 	const searchFormRef = useRef<{
 		minPrice?: number;
 		maxPrice?: number;
+		email?: string;
 	}>({});
 
-	const { listings, setListings, isLoading, setIsLoading } = useListings();
+	const { listings, setListings } = useListings();
 
 	const fetchListings = async () => {
-		if (isLoading) return;
-		if (error) setError("");
-		setIsLoading(true);
+		if (listingsLoading || subscriptionCreating) return;
+		setListingsLoading(true);
 		try {
-			const { minPrice, maxPrice } = searchFormRef.current;
-			const searchParams: string = [
-				minPrice !== undefined ? `minPrice=${minPrice}` : "",
-				maxPrice !== undefined ? `maxPrice=${maxPrice}` : "",
-				bedrooms !== undefined ? `bedrooms=${bedrooms}` : "",
-			]
-				.filter((searchParam) => searchParam)
-				.join("&");
+			let { minPrice, maxPrice } = adjustParams(searchFormRef.current);
+			const searchParams: string = getSearchParamString(
+				{ minPrice, maxPrice },
+				bedrooms,
+				neighborhood
+			);
 
 			const result = await fetch(
 				`${import.meta.env.VITE_API_URL}/listings${
@@ -48,11 +52,55 @@ export function SearchForm() {
 			const data = await result.json();
 			setListings(data.listings);
 		} catch (error) {
-			setError(
-				"Something went wrong, we were unable to fetch the listings"
+			toast(
+				<div className="flex items-center justify-center border border-red-500 text-red-500 bg-red-50 px-4 py-2 rounded-lg shadow-md">
+					Something went wrong! We were unable to fetch the listings!
+				</div>
 			);
 		} finally {
-			setIsLoading(false);
+			setListingsLoading(false);
+		}
+	};
+
+	const createSubscription = async () => {
+		if (listingsLoading || subscriptionCreating) return;
+		setSubscriptionCreating(true);
+		try {
+			let { email, minPrice, maxPrice } = adjustParams(
+				searchFormRef.current
+			);
+			if (!email) return;
+
+			const result = await fetch(
+				`${import.meta.env.VITE_API_URL}/subscription`,
+				{
+					method: "POST",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						email,
+						bedrooms,
+						minPrice,
+						maxPrice,
+						neighborhood,
+					}),
+				}
+			);
+			if (!result.ok) throw Error("Unable to create subscription");
+			toast(
+				<p className="flex items-center justify-center border border-green-500 text-green-500 bg-green-50 px-4 py-2 rounded-lg shadow-md">
+					Success! Check your email to confirm your subscription!
+				</p>
+			);
+		} catch (error) {
+			toast(
+				<div className="flex items-center justify-center border border-red-500 text-red-500 bg-red-50 px-4 py-2 rounded-lg shadow-md">
+					Something went wrong! We were unable to send you the email!
+				</div>
+			);
+		} finally {
+			setSubscriptionCreating(false);
 		}
 	};
 
@@ -190,9 +238,7 @@ export function SearchForm() {
 			<div className="w-full px-4 lg:px-20 space-y-4 flex flex-col items-center">
 				<h3 className="text-xl font-semibold">Neighborhood</h3>
 				<Combobox
-					data={MONTREAL_NEIGHBORHOODS_DATA.features.map(
-						({ properties }) => properties.NOM_OFFICIEL
-					)}
+					data={Array.from(MTL_NEIGHBORHOODS)}
 					value={neighborhood}
 					setValue={setNeighborhood}
 					placeholder="neighborhood"
@@ -201,7 +247,7 @@ export function SearchForm() {
 			<div className="w-full px-4 lg:px-20 flex flex-col justify-center items-center gap-4">
 				<div className="flex gap-2">
 					<Button className="w-32" onClick={fetchListings}>
-						{isLoading ? (
+						{listingsLoading ? (
 							<LoaderCircleIcon className="h-8 w-8 animate-spin mx-auto" />
 						) : (
 							"SEARCH"
@@ -217,15 +263,30 @@ export function SearchForm() {
 				</div>
 				{listings ? (
 					<div className="flex gap-2 items-center">
-						<Input placeholder="Enter your email..." type="email" />
-						<Button className="w-40">
-							<BellIcon />
-							NOTIFY ME
+						<Input
+							placeholder="Enter your email..."
+							type="email"
+							onChange={(value) => {
+								if (!value.currentTarget.value)
+									searchFormRef.current.email = undefined;
+								else
+									searchFormRef.current.email =
+										value.currentTarget.value;
+							}}
+						/>
+						<Button className="w-40" onClick={createSubscription}>
+							{subscriptionCreating ? (
+								<LoaderCircleIcon className="h-8 w-8 animate-spin mx-auto" />
+							) : (
+								<>
+									<BellIcon />
+									NOTIFY ME
+								</>
+							)}
 						</Button>
 					</div>
 				) : null}
 			</div>
-			{error ? <p className="text-red-500 text-center">{error}</p> : null}
 		</div>
 	);
 }

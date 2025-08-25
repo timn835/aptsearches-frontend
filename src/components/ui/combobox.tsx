@@ -38,11 +38,13 @@ export function Combobox({
 					role="combobox"
 					aria-expanded={open}
 					className="w-[200px] lg:w-[300px] justify-between">
-					{value
-						? data.find((element) => element === value)
-						: placeholder
-						? `Select ${placeholder}...`
-						: "Select..."}
+					<span className="w-[180px] lg:w-[280px] truncate">
+						{value
+							? data.find((element) => element === value)
+							: placeholder
+							? `Select ${placeholder}...`
+							: "Select..."}
+					</span>
 					<ChevronsUpDown className="opacity-50" />
 				</Button>
 			</PopoverTrigger>

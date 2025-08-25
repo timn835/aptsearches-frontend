@@ -5,6 +5,53 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs));
 }
 
+export const EMAIL_REGEX =
+	/^([a-z\d_-]+)(((\.[a-z\d_-]+)|(-[a-z\d_-]+))+)?(\+[a-z\d_-]+)?@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i;
+
+export function adjustParams(params: {
+	minPrice?: number | undefined;
+	maxPrice?: number | undefined;
+	email?: string | undefined;
+}): {
+	minPrice?: number | undefined;
+	maxPrice?: number | undefined;
+	email?: string | undefined;
+} {
+	let { minPrice, maxPrice, email } = params;
+	if (email && !EMAIL_REGEX.test(email)) email = undefined;
+	if (email !== undefined) email = email.trim();
+	if (minPrice !== undefined && minPrice < 0) minPrice = undefined;
+	if (maxPrice !== undefined && maxPrice < 0) maxPrice = undefined;
+	if (
+		minPrice !== undefined &&
+		maxPrice !== undefined &&
+		maxPrice < minPrice
+	) {
+		minPrice = undefined;
+	}
+	return { minPrice, maxPrice, email };
+}
+
+export function getSearchParamString(
+	params: {
+		minPrice?: number | undefined;
+		maxPrice?: number | undefined;
+		email?: string | undefined;
+	},
+	bedrooms?: number,
+	neighborhood?: string
+): string {
+	const { minPrice, maxPrice } = params;
+	return [
+		minPrice !== undefined ? `minPrice=${minPrice}` : "",
+		maxPrice !== undefined ? `maxPrice=${maxPrice}` : "",
+		bedrooms !== undefined ? `bedrooms=${bedrooms}` : "",
+		neighborhood !== undefined ? `neighborhood=${neighborhood}` : "",
+	]
+		.filter((searchParam) => searchParam)
+		.join("&");
+}
+
 export function formatNumber(n: number): string {
 	let workingNumber = Math.abs(n);
 	// Calculate the remainder to get right of decimal point
@@ -32,6 +79,43 @@ export function formatNumber(n: number): string {
 
 	return result;
 }
+
+export const MTL_NEIGHBORHOODS = new Set<string>([
+	"LaSalle",
+	"Dollard-des-Ormeaux",
+	"Côte-Saint-Luc",
+	"Villeray-Saint-Michel-Parc-Extension",
+	"Rosemont-La Petite-Patrie",
+	"Hampstead",
+	"Senneville",
+	"Le Plateau-Mont-Royal",
+	"Sainte-Anne-de-Bellevue",
+	"Montréal-Ouest",
+	"Côte-des-Neiges-Notre-Dame-de-Grâce",
+	"L'Île-Bizard-Sainte-Geneviève",
+	"Beaconsfield",
+	"Anjou",
+	"Verdun",
+	"Le Sud-Ouest",
+	"Mercier-Hochelaga-Maisonneuve",
+	"Montréal-Est",
+	"Lachine",
+	"Saint-Léonard",
+	"Montréal-Nord",
+	"Outremont",
+	"L'Île-Dorval",
+	"Mont-Royal",
+	"Pointe-Claire",
+	"Dorval",
+	"Pierrefonds-Roxboro",
+	"Rivière-des-Prairies-Pointe-aux-Trembles",
+	"Ahuntsic-Cartierville",
+	"Saint-Laurent",
+	"Ville-Marie",
+	"Kirkland",
+	"Baie-D'Urfé",
+	"Westmount",
+]);
 
 export const MONTREAL_NEIGHBORHOODS_DATA = {
 	type: "FeatureCollection",
