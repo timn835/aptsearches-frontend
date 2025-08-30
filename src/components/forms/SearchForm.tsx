@@ -71,7 +71,7 @@ export function SearchForm() {
 			let { email, minPrice, maxPrice } = adjustParams(
 				searchFormRef.current
 			);
-			if (!email) return;
+			if (!email) throw Error("Invalid email");
 
 			const result = await fetch(
 				`${import.meta.env.VITE_API_URL}/subscription`,

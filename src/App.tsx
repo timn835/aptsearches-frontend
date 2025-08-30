@@ -1,14 +1,14 @@
+import { columns } from "@/components/application/ListingsColumns";
 import { ListingsTable } from "@/components/application/ListingsTable";
+import { ToastCard } from "@/components/application/ToastCard";
 import { useListings } from "@/components/context/listings-provider";
 import { SearchForm } from "@/components/forms/SearchForm";
 import { Header } from "@/components/layout/Header";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowBigDownIcon, SendIcon } from "lucide-react";
-import { columns } from "@/components/application/ListingsColumns";
-import { toast, Toaster } from "sonner";
+import { ArrowBigDownIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
-import { ToastCard } from "@/components/application/ToastCard";
+import { toast, Toaster } from "sonner";
+import { SuggestForm } from "@/components/forms/SuggestForm";
 
 export default function App() {
 	const { listings } = useListings();
@@ -89,15 +89,11 @@ export default function App() {
 					<h2 className="text-center font-bold text-3xl">
 						Are we missing a website?
 					</h2>
-					<p>Suggest a site to add to our searches.</p>
-					<div
-						id="suggest"
-						className="flex items-center justify-center gap-2">
-						<Input placeholder="Enter name or url" />
-						<Button>
-							<SendIcon />
-						</Button>
-					</div>
+					<p>
+						Suggest a site to add to our searches (you must have an
+						active subscription).
+					</p>
+					<SuggestForm />
 				</section>
 			</div>
 			<Toaster position="top-center" />
