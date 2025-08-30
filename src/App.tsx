@@ -6,16 +6,59 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowBigDownIcon, SendIcon } from "lucide-react";
 import { columns } from "@/components/application/ListingsColumns";
-// import { Toaster } from "@/components/ui/sonner";
-import { Toaster } from "sonner";
+import { toast, Toaster } from "sonner";
+import { useEffect, useRef } from "react";
+import { ToastCard } from "@/components/application/ToastCard";
 
 export default function App() {
 	const { listings } = useListings();
+	const hasShown = useRef<boolean>(false); // To fix double toast on react strict mode
+	useEffect(() => {
+		if (hasShown.current) return;
+		hasShown.current = true;
+		const params = new URLSearchParams(window.location.search);
+		const subscriptionSuccess = params.get("subscription_success");
+		const unsubscribeSuccess = params.get("unsubscribe_success");
+
+		if (subscriptionSuccess === "true") {
+			toast(
+				<ToastCard
+					message="Your subscription was successful, you will now receive new listings by email!"
+					success
+				/>
+			);
+			return;
+		}
+		if (subscriptionSuccess === "false") {
+			toast(
+				<ToastCard
+					message="Someting went wrong, unable to complete your subscription, please try again."
+					error
+				/>
+			);
+			return;
+		}
+		if (unsubscribeSuccess === "true") {
+			toast(
+				<ToastCard
+					message="Your subscription has been cancelled, you will no longer receive new listings by email."
+					success
+				/>
+			);
+			return;
+		}
+		if (unsubscribeSuccess === "false") {
+			toast(
+				<ToastCard
+					message="Someting went wrong, we were unable to cancel your subscription, please try again."
+					error
+				/>
+			);
+		}
+	}, []);
 	return (
 		<div className="flex min-h-screen flex-col">
-			{/* Navbar */}
 			<Header />
-
 			<div className="bg-gradient-to-b from-blue-100 to-white">
 				<section className="mt-20 flex flex-1 items-center justify-center gap-10">
 					<div className="mx-auto max-w-6xl px-4 text-center">
@@ -58,7 +101,6 @@ export default function App() {
 				</section>
 			</div>
 			<Toaster position="top-center" />
-			{/* Footer */}
 			<footer className="mt-10 border-t py-6 text-center text-sm text-muted-foreground">
 				&copy; {new Date().getFullYear()} APTSearches. All rights
 				reserved.

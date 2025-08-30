@@ -1,3 +1,4 @@
+import { ToastCard } from "@/components/application/ToastCard";
 import { useListings } from "@/components/context/listings-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -53,9 +54,10 @@ export function SearchForm() {
 			setListings(data.listings);
 		} catch (error) {
 			toast(
-				<div className="flex items-center justify-center border border-red-500 text-red-500 bg-red-50 px-4 py-2 rounded-lg shadow-md">
-					Something went wrong! We were unable to fetch the listings!
-				</div>
+				<ToastCard
+					message="Something went wrong! We were unable to fetch the listings, please try again."
+					error
+				/>
 			);
 		} finally {
 			setListingsLoading(false);
@@ -89,15 +91,17 @@ export function SearchForm() {
 			);
 			if (!result.ok) throw Error("Unable to create subscription");
 			toast(
-				<p className="flex items-center justify-center border border-green-500 text-green-500 bg-green-50 px-4 py-2 rounded-lg shadow-md">
-					Success! Check your email to confirm your subscription!
-				</p>
+				<ToastCard
+					message="Success! Please click on the link sent to your email to confirm the subscription!"
+					success
+				/>
 			);
 		} catch (error) {
 			toast(
-				<div className="flex items-center justify-center border border-red-500 text-red-500 bg-red-50 px-4 py-2 rounded-lg shadow-md">
-					Something went wrong! We were unable to send you the email!
-				</div>
+				<ToastCard
+					message="Something went wrong! We were unable to send you the email, please try again"
+					error
+				/>
 			);
 		} finally {
 			setSubscriptionCreating(false);
